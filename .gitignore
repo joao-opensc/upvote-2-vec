@@ -2,9 +2,4 @@ data/
 word2vec_trained_model/
 data/chunks/
 data/text8
-*.env
 .env
-config.json
-credentials.json
-*.pem
-*.key
