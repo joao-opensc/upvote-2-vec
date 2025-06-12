@@ -7,6 +7,7 @@ import zipfile
 from io import BytesIO
 from urllib.parse import urlparse
 import glob
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -15,38 +16,64 @@ import torch
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
-
+import sys
 import src.config as cfg
 
 # --- GloVe Embedding Loading ---
 
 def load_glove_embeddings(glove_file=cfg.GLOVE_FILE):
-    """Loads GloVe embeddings from file, downloading if necessary."""
+    """
+    Loads GloVe embeddings from file, using a cached version if available.
+    Downloads the raw file if it doesn't exist.
+    """
+    glove_dir = os.path.dirname(glove_file)
+    cached_word_to_idx_path = os.path.join(glove_dir, "word_to_idx.pkl")
+    cached_embeddings_path = os.path.join(glove_dir, "embeddings.npy")
+
+    # Try to load from cache first
+    if os.path.exists(cached_word_to_idx_path) and os.path.exists(cached_embeddings_path):
+        print("Loading cached GloVe embeddings...")
+        with open(cached_word_to_idx_path, 'rb') as f:
+            word_to_idx = pickle.load(f)
+        embeddings = np.load(cached_embeddings_path)
+        print(f"✅ Cached GloVe embeddings loaded: {len(word_to_idx):,} words, {embeddings.shape[1]} dim.")
+        return word_to_idx, embeddings
+
+    # If cache not found, load from raw file
     if not os.path.exists(glove_file):
         print("Downloading GloVe 200d embeddings...")
         url = "https://nlp.stanford.edu/data/glove.6B.zip"
         response = requests.get(url, stream=True)
         with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
+            # Note: The file inside the zip is 'glove.6B.200d.txt'
             with zip_file.open("glove.6B.200d.txt") as source:
-                os.makedirs(os.path.dirname(glove_file), exist_ok=True)
+                os.makedirs(glove_dir, exist_ok=True)
                 with open(glove_file, "wb") as target:
                     target.write(source.read())
         print("✅ Download complete!")
 
-    print("Loading GloVe word vectors...")
-    word_to_index = {}
+    print("Loading GloVe word vectors from raw file...")
+    word_to_idx = {}
     embeddings_list = []
     with open(glove_file, 'r', encoding='utf-8') as f:
         for line in f:
             parts = line.strip().split()
             word = parts[0]
             vector = np.array([float(x) for x in parts[1:]])
-            word_to_index[word] = len(embeddings_list)
+            word_to_idx[word] = len(embeddings_list)
             embeddings_list.append(vector)
     
     embeddings = np.array(embeddings_list)
-    print(f"✅ GloVe embeddings loaded: {len(word_to_index):,} words, {embeddings.shape[1]} dim.")
-    return word_to_index, embeddings
+    print(f"✅ GloVe embeddings loaded: {len(word_to_idx):,} words, {embeddings.shape[1]} dim.")
+    
+    # Save to cache for future use
+    print("Caching GloVe embeddings for faster loading...")
+    with open(cached_word_to_idx_path, 'wb') as f:
+        pickle.dump(word_to_idx, f)
+    np.save(cached_embeddings_path, embeddings)
+    print("✅ GloVe embeddings cached.")
+
+    return word_to_idx, embeddings
 
 # --- Feature Engineering Functions ---
 

@@ -7,10 +7,10 @@ from datetime import datetime
 import numpy as np
 import torch
 
-import config as cfg
-from data_processing import (clean_text, extract_domains,
+import src.config as cfg
+from src.data_processing import (clean_text, extract_domains,
                                  load_glove_embeddings, title_to_embedding)
-from model import CombinedScorePredictor
+from src.model import CombinedScorePredictor
 
 class Scorer:
     def __init__(self, artifacts_dir=cfg.ARTIFACTS_DIR):
@@ -93,9 +93,9 @@ def predict_score(title: str, url: str, user: str, timestamp: int):
 if __name__ == '__main__':
     # Example usage:
     print("\n--- Example Prediction ---")
-    test_title = "Show HN: A new tool to predict Hacker News scores"
-    test_url = "https://github.com/someuser/newtool"
-    test_user = "someuser" # A user not in the top list
+    test_title = "Wa wa wa wa wa wa wa"
+    test_url = "https://walks.com"
+    test_user = "johnwalker" # A user not in the top list
     test_timestamp = int(datetime.now().timestamp())
     
     predicted_score = predict_score(test_title, test_url, test_user, test_timestamp)
