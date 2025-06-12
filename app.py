@@ -30,32 +30,38 @@ def main():
         date = st.date_input("Post Date", value=default_date)
         time_str = st.text_input("Post Time (HH:MM)", value=default_time.strftime("%H:%M"))
 
-        
-        # Combine into a single datetime object if needed
-        # full_datetime = datetime.combine(date, timee)
+
+
         st.write(f"You selected: {date} @ {time_str}")
 
         if st.button("Predict"):
             try:
                 entered_time = datetime.strptime(time_str, "%H:%M").time()
                 st.success(f"You selected: {date} @ {time_str}")
+                # Combine into a single datetime object to convert to unix timestamp
+                combined_datetime = f"{date} {time_str}:00"
+                
+                # Convert to datetime object
+                dt = datetime.strptime(combined_datetime, "%Y-%m-%d %H:%M:%S")
+                unix_timestamp = int(dt.timestamp())
+
                 input_data = {
                     "title": title,
                     "url": url,
                     "user": author,
                     # "date": date,
-                    "timestamp": time_str
+                    "timestamp": unix_timestamp
                 }
             except ValueError:
                 st.error("Please enter time in 24-hour HH:MM format.")
             # prediction = model.predict(process_input(input_data))
             # st.metric("Predicted Upvotes", round(prediction[0], 2))
-
+            
             try:
                 response = requests.post("http://localhost:8000/predict", json=input_data)
 
                 if response.status_code == 200:
-                    prediction = response.json()["prediction"]
+                    prediction = response.json()["predicted_score"]
                     st.success(f"Predicted Upvotes: {prediction}")
                 else:
                     st.error(f"Error from server: {response.text}")
