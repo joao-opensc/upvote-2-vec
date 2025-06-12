@@ -1,17 +1,34 @@
+# Use an official Python runtime as a parent image
 FROM python:3.10-slim
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install system dependencies that might be required by Python packages
+# For example, if you had packages that needed C compilers or other libs.
+# RUN apt-get update && apt-get install -y --no-install-recommends gcc
+
+# Copy the requirements file and install dependencies
 COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all application code
-COPY . .
+# Copy the application code and artifacts into the container
+# This assumes you have already trained the model and have the artifacts ready.
+COPY ./src /app/src
+COPY ./app /app/app
+COPY ./artifacts /app/artifacts
+COPY ./data /app/data
 
-# Expose ports
-EXPOSE 8888 8501
+# Expose the port the app runs on
+EXPOSE 8000
 
-# Default command to run the FastAPI app
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8888"]
+# Run the application using a production-grade server like Gunicorn
+# The command should be: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app -b 0.0.0.0:8000
+# Breaking it down for the CMD instruction:
+# ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000"]
+CMD ["gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "app.main:app"] 
