@@ -3,7 +3,9 @@ Main training script for the HackerNews Score Prediction model.
 """
 import os
 import pickle
+import shutil
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
@@ -25,6 +27,7 @@ def train_epoch(model, train_loader, criterion, optimizer, epoch):
         outputs = model(title_emb, num, dom_ids, usr_ids)
         loss = criterion(outputs, y)
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         total_loss += loss.item()
         if batch_idx % 100 == 0:
@@ -59,24 +62,24 @@ def evaluate_model(model, data_loader, criterion, prefix="val", epoch=None):
         log_data["epoch"] = epoch
     wandb.log(log_data)
     
-    return avg_loss, r2
+    return avg_loss, r2, predictions, targets
 
-def main():
+def train():
     """Main function to run the training pipeline."""
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-
     # --- W&B Initialization ---
-    
-    # Create a dictionary of config parameters to pass to wandb
-    wandb_config = {k: v for k, v in vars(cfg).items() if not k.startswith('_')}
-
+    default_config = {k: v for k, v in vars(cfg).items() if not k.startswith('_')}
     wandb.init(
         project="hackernews-score-prediction",
-        name="structured-run-v1",
-        config=wandb_config
+        config=default_config
     )
     config = wandb.config
+    # Set a default run name if not set by sweep, which usually provides one
+    if wandb.run.name == wandb.run.id:
+        wandb.run.name = "manual-single-run"
+
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
 
     # --- Data Preparation ---
     data = prepare_features(config)
@@ -115,7 +118,7 @@ def main():
     print("\n--- Starting Training ---")
     for epoch in range(config.NUM_EPOCHS):
         train_loss = train_epoch(model, train_loader, criterion, optimizer, epoch)
-        val_loss, val_r2 = evaluate_model(model, val_loader, criterion, "val", epoch)
+        val_loss, val_r2, _, _ = evaluate_model(model, val_loader, criterion, "val", epoch)
         scheduler.step(val_loss)
 
         print(f"Epoch {epoch+1}/{config.NUM_EPOCHS} | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val R²: {val_r2:.4f}")
@@ -136,9 +139,25 @@ def main():
     # --- Final Evaluation and Artifact Saving ---
     print("\n--- Training Finished. Evaluating on test set... ---")
     model.load_state_dict(torch.load(cfg.MODEL_PATH))
-    test_loss, test_r2 = evaluate_model(model, test_loader, criterion, "test")
+    test_loss, test_r2, test_preds, test_targets = evaluate_model(model, test_loader, criterion, "test")
     print(f"🧪 Test Results: Loss={test_loss:.4f}, R²={test_r2:.4f}")
     
+    # ── PREDICTED vs ACTUAL SCATTER ─────────────────────
+    y_pred_orig = np.expm1(test_preds)
+    y_true_orig = np.expm1(test_targets)
+
+    plt.figure(figsize=(8, 8))
+    plt.scatter(y_true_orig, y_pred_orig, alpha=0.1, s=5)
+    plt.plot([y_true_orig.min(), y_true_orig.max()],
+             [y_true_orig.min(), y_true_orig.max()],
+             'r--', lw=2, label='Ideal Fit')
+    plt.xscale('log');  plt.yscale('log')
+    plt.xlabel('Actual Score');     plt.ylabel('Predicted Score')
+    plt.title('Predicted vs. Actual (log-log scale)')
+    plt.grid(True);      plt.legend();
+    wandb.log({"predicted_vs_actual": wandb.Image(plt)})
+    plt.close()
+
     # Save artifacts
     with open(cfg.DOMAIN_ENCODER_PATH, 'wb') as f:
         pickle.dump(data["domain_encoder"], f)
@@ -150,5 +169,18 @@ def main():
     
     wandb.finish()
 
+    # --- Cleanup ---
+    # The data object holds a reference to the memory-mapped file.
+    # Deleting it allows the file to be unmapped so we can remove the directory.
+    print("🧹 Cleaning up temporary embedding files...")
+    temp_dir = "temp_embeddings"
+    if hasattr(data["X_title_embeddings"], 'filename') and os.path.dirname(data["X_title_embeddings"].filename) == temp_dir:
+        del data
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+            print("✅ Cleanup complete.")
+    else:
+        print("⏩ No temporary files to clean up or path mismatch.")
+
 if __name__ == '__main__':
-    main() 
+    train() 

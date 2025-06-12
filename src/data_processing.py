@@ -194,33 +194,36 @@ def prepare_features(cfg):
     temp_dir = "temp_embeddings"
     os.makedirs(temp_dir, exist_ok=True)
     
+    # Create memory-mapped array for final embeddings
+    total_samples = len(df_augmented)
+    embedding_dim = embeddings.shape[1]  # Should be 200 for GloVe
+    X_title_embeddings = np.memmap(
+        f"{temp_dir}/embeddings.mmap",
+        dtype='float32',
+        mode='w+',
+        shape=(total_samples, embedding_dim)
+    )
+    
     # Process and save embeddings in batches
-    for i in range(0, len(df_augmented), batch_size):
-        batch_titles = df_augmented['title'].iloc[i:i+batch_size]
+    for i in range(0, total_samples, batch_size):
+        end_idx = min(i + batch_size, total_samples)
+        batch_titles = df_augmented['title'].iloc[i:end_idx]
         batch_embeddings = [title_to_embedding(title, word_to_idx, embeddings) for title in batch_titles]
-        batch_array = np.array(batch_embeddings)
-        # Save batch to disk
-        np.save(f"{temp_dir}/batch_{i//batch_size}.npy", batch_array)
+        # Write directly to memory-mapped array
+        X_title_embeddings[i:end_idx] = batch_embeddings
         # Clear memory
         del batch_embeddings
-        del batch_array
         if i % 100000 == 0:
-            print(f"Processed and saved {i:,} titles...")
+            print(f"Processed {i:,} titles...")
     
-    # Load all batches and combine
-    print("Loading and combining embeddings...")
-    batch_files = sorted(glob.glob(f"{temp_dir}/batch_*.npy"))
-    X_title_embeddings = np.concatenate([np.load(f) for f in batch_files])
-    
-    # Clean up temporary files
-    print("Cleaning up temporary files...")
-    for f in batch_files:
-        os.remove(f)
-    os.rmdir(temp_dir)
+    # Flush changes to disk
+    X_title_embeddings.flush()
     
     # Update word counts after augmentation
     df_augmented['word_count'] = [len(title.strip().split()) for title in df_augmented['title']]
-
+    
+    # Clean up of temp files is now handled in the main training script
+    
     # Prepare other features
     print("Preparing numerical features...")
     numerical_features = df_augmented[['word_count', 'time_of_day_sin', 'time_of_day_cos', 
@@ -268,8 +271,9 @@ def create_data_loader(data_dict, indices, batch_size, shuffle=True):
     """Creates a PyTorch DataLoader."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
+    # X_title_embeddings is a memory-mapped numpy array, which can be used directly
     dataset = TensorDataset(
-        torch.FloatTensor(data_dict["X_title_embeddings"][indices]).to(device),
+        torch.from_numpy(data_dict["X_title_embeddings"][indices]).float().to(device),
         torch.FloatTensor(data_dict["X_numerical_scaled"][indices]).to(device),
         torch.LongTensor(data_dict["X_domain_ids"][indices]).to(device),
         torch.LongTensor(data_dict["X_user_ids"][indices]).to(device),

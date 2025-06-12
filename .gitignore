@@ -3,3 +3,4 @@ word2vec_trained_model/
 data/chunks/
 data/
 wandb/
+temp_embeddings/
