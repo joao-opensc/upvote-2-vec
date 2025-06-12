@@ -1,0 +1,11 @@
+requests
+numpy
+torch
+jupyterlab 
+wandb
+pandas
+psycopg2
+tqdm
+pyarrow
+matplotlib
+seaborn

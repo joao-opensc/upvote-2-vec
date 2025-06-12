@@ -1,0 +1,4 @@
+word2vec_trained_model/
+.env
+data/chunks/
+data/
