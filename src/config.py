@@ -22,8 +22,8 @@ DROPOUT_RATE = 0.1         # Dropout rate
 
 # Training Constants
 BATCH_SIZE = 512           # Batch size for training
-LEARNING_RATE = 1e-2       # Learning rate
-WEIGHT_DECAY = 1e-4        # Weight decay for AdamW
+LEARNING_RATE = 1e-1       # Learning rate
+WEIGHT_DECAY = 1e-2        # Weight decay for AdamW
 NUM_EPOCHS = 100            # Maximum training epochs
 PATIENCE = 100             # Early stopping patience
 FACTOR = 0.5               # Learning rate reduction factor

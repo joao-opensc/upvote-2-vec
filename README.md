@@ -2,7 +2,30 @@
 
 This project contains a machine learning model to predict the potential score of a HackerNews submission. The model is built with PyTorch and served via a FastAPI application. A Streamlit application is also included to interact with the model.
 
-This repository is a refactored version of an experimental Jupyter Notebook, organized for maintainability and deployment.
+## 🚀 Server Deployment
+
+### Option 1: Simple Deployment (Direct Access)
+```bash
+docker-compose up -d --build
+```
+- Frontend: http://your-server:8501
+- Backend: http://your-server:8888
+
+### Option 2: Production Deployment (with Nginx)
+```bash
+docker-compose -f docker-compose.prod.yml --profile with-nginx up -d --build
+```
+- Access everything through: http://your-server
+- API endpoints: http://your-server/api/
+
+### Option 3: Development/Local
+```bash
+docker-compose up --build
+```
+- Frontend: http://localhost:8501
+- Backend: http://localhost:8888
+
+That's it! 🎉
 
 ## Project Structure
 
@@ -69,7 +92,7 @@ For development, you can run the app directly with Uvicorn, which supports live 
 uvicorn backend.main:app --reload
 ```
 
-The API will be available at `http://127.0.0.1:8000`. You can access the interactive documentation at `http://127.0.0.1:8000/docs`.
+The API will be available at `http://127.0.0.1:8888`. You can access the interactive documentation at `http://127.0.0.1:8888/docs`.
 
 ### With Docker
 
@@ -82,10 +105,10 @@ docker build -t hn-score-predictor .
 Then, run the container:
 
 ```bash
-docker run -p 8000:8000 hn-score-predictor
+docker run -p 8888:8888 hn-score-predictor
 ```
 
-The API will be accessible at `http://localhost:8000`.
+The API will be accessible at `http://localhost:8888`.
 
 ## Running the Frontend
 
@@ -105,7 +128,7 @@ You can send a `POST` request to the `/predict` endpoint with your story's data.
 
 ```bash
 curl -X 'POST' \
-  'http://localhost:8000/predict' \
+  'http://localhost:8888/predict' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{

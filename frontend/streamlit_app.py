@@ -1,6 +1,7 @@
 import streamlit as st
 # from annotated_text import annotated_text
 from datetime import datetime, time, timedelta
+import os
 
 import torch
 import numpy as np
@@ -58,7 +59,8 @@ def main():
             # st.metric("Predicted Upvotes", round(prediction[0], 2))
             
             try:
-                response = requests.post("http://localhost:8000/predict", json=input_data)
+                backend_url = os.getenv("BACKEND_URL", "http://localhost:8888")
+                response = requests.post(f"{backend_url}/predict", json=input_data)
 
                 if response.status_code == 200:
                     prediction = response.json()["predicted_score"]

@@ -18,3 +18,7 @@ matplotlib
 # Utilities
 python-dotenv
 streamlit
+
+# Jupyter
+ipykernel
+notebook
