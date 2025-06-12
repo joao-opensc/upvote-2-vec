@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
-import config as cfg
+import src.config as cfg
 
 # --- GloVe Embedding Loading ---
 

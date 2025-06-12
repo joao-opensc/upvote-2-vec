@@ -49,7 +49,7 @@ def main():
         },
         'parameters': {
             # --- Model Architecture ---
-            'LEARNING_RATE': {'distribution': 'log_uniform_values', 'min': 1e-5, 'max': 1e-3},
+            'LEARNING_RATE': {'distribution': 'log_uniform_values', 'min': 1e-3, 'max': 1e-1},
             'WEIGHT_DECAY': {'distribution': 'log_uniform_values', 'min': 1e-6, 'max': 1e-2},
             'HIDDEN_DIM': {'values': [128, 256, 512]},
             'DROPOUT_RATE': {'distribution': 'uniform', 'min': 0.1, 'max': 0.5},
@@ -92,37 +92,19 @@ def main():
     print(f"\n🔥 Launching {args.agents} parallel agents...")
     processes = []
     
-    # Add the project root to the python path to allow relative imports
-    env = os.environ.copy()
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    env['PYTHONPATH'] = project_root + os.pathsep + env.get('PYTHONPATH', '')
-    
-    # We need to set the executable for the subprocesses to be the same python
-    # that is running this script. This is to avoid issues in environments
-    # where multiple python versions might be installed.
-    # The command to run is `wandb agent ...`, but it's called via python's entrypoint.
-    command = [
-        sys.executable,
-        '-m',
-        'wandb',
-        'agent',
-        f"{args.project_name}/{sweep_id}"
-    ]
-
     for _ in range(args.agents):
-        # Using subprocess.Popen to run agents in the background
-        # This is often more robust for long-running, independent tasks like agents.
-        p = subprocess.Popen(command, env=env)
+        # Using multiprocessing.Process to run agents in parallel
+        p = Process(target=run_agent, args=(sweep_id, args.project_name))
+        p.start()
         processes.append(p)
         print(f"  -> Launched agent with PID: {p.pid}")
 
-    print(f"\n✅ All {args.agents} agents have been launched in the background.")
+    print(f"\n✅ All {args.agents} agents have been launched.")
     print("You can monitor their progress in the W&B dashboard.")
-    print("To stop all agents, you will need to manually terminate their processes.")
     
     # Wait for all processes to complete
     for p in processes:
-        p.wait()
+        p.join()
 
     print("\n--- All agent processes have finished. ---")
 

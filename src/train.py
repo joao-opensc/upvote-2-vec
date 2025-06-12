@@ -14,9 +14,9 @@ import wandb
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-import config as cfg
-from data_processing import create_data_loader, prepare_features
-from model import CombinedScorePredictor
+import src.config as cfg
+from src.data_processing import create_data_loader, prepare_features
+from src.model import CombinedScorePredictor
 
 
 def train_epoch(model, train_loader, criterion, optimizer, epoch):
