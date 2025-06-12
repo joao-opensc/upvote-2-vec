@@ -1,0 +1,29 @@
+{
+  "os": "Linux-6.10.14-linuxkit-aarch64-with-glibc2.36",
+  "python": "CPython 3.10.17",
+  "startedAt": "2025-06-12T13:37:42.141564Z",
+  "program": "-m src.train",
+  "git": {
+    "remote": "https://github.com/joao-opensc/upvote-2-vec",
+    "commit": "efa3fba36cfcca1ed116ffc2702ad11a8e21294f"
+  },
+  "email": "joaopaesteves99@gmail.com",
+  "root": "/workspace",
+  "host": "35600b03abac",
+  "executable": "/usr/local/bin/python",
+  "cpu_count": 12,
+  "cpu_count_logical": 12,
+  "disk": {
+    "/": {
+      "total": "1962755264512",
+      "used": "43787292672"
+    }
+  },
+  "memory": {
+    "total": "25162465280"
+  },
+  "cpu": {
+    "count": 12,
+    "countLogical": 12
+  }
+}

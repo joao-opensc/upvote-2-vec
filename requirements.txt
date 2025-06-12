@@ -1,11 +1,19 @@
-requests
+# Core ML & Data
+pandas
 numpy
 torch
-jupyterlab 
+scikit-learn
 wandb
-pandas
-psycopg2
-tqdm
-pyarrow
+requests
+
+# Web API
+fastapi
+uvicorn[standard]
+pydantic
+gunicorn
+
+# Plotting (for notebooks/analysis)
 matplotlib
-seaborn
+
+# Utilities
+python-dotenv

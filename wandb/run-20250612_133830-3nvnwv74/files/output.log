@@ -1,0 +1,29 @@
+--- Starting Data Preparation ---
+Filtered to 548,342 samples.
+✅ Base features engineered.
+🚀 Performing data augmentation...
+✅ Augmentation complete. Total samples: 571,590
+Loading GloVe word vectors...
+✅ GloVe embeddings loaded: 400,000 words, 200 dim.
+--- Data Preparation Finished ---
+Split sizes: Train=342,953, Val=85,739, Test=142,898
+
+--- Starting Training ---
+Epoch 1/10 | Train Loss: 1.5676 | Val Loss: 1.2687 | Val R²: -0.0886
+  🎯 New best model saved with R²: -0.0886
+Epoch 2/10 | Train Loss: 1.3337 | Val Loss: 1.2687 | Val R²: -0.1107
+Epoch 3/10 | Train Loss: 1.2819 | Val Loss: 1.2501 | Val R²: -0.0888
+Epoch 4/10 | Train Loss: 1.2615 | Val Loss: 1.2512 | Val R²: -0.0881
+  🎯 New best model saved with R²: -0.0881
+Epoch 5/10 | Train Loss: 1.2525 | Val Loss: 1.2461 | Val R²: -0.0688
+  🎯 New best model saved with R²: -0.0688
+Epoch 6/10 | Train Loss: 1.2463 | Val Loss: 1.2560 | Val R²: -0.0426
+  🎯 New best model saved with R²: -0.0426
+Epoch 7/10 | Train Loss: 1.2422 | Val Loss: 1.2480 | Val R²: -0.0539
+Epoch 8/10 | Train Loss: 1.2391 | Val Loss: 1.2547 | Val R²: -0.0966
+Epoch 9/10 | Train Loss: 1.2359 | Val Loss: 1.2413 | Val R²: -0.0726
+Epoch 10/10 | Train Loss: 1.2334 | Val Loss: 1.2421 | Val R²: -0.0772
+
+--- Training Finished. Evaluating on test set... ---
+🧪 Test Results: Loss=1.2590, R²=-0.0419
+✅ Artifacts saved to 'artifacts'

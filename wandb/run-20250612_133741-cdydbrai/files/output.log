@@ -1,0 +1,34 @@
+--- Starting Data Preparation ---
+Filtered to 548,342 samples.
+✅ Base features engineered.
+🚀 Performing data augmentation...
+✅ Augmentation complete. Total samples: 571,590
+Loading GloVe word vectors...
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/workspace/src/train.py", line 154, in <module>
+    main()
+  File "/workspace/src/train.py", line 82, in main
+    data = prepare_features(config)
+  File "/workspace/src/data_processing.py", line 188, in prepare_features
+    word_to_idx, embeddings = load_glove_embeddings(cfg.GLOVE_FILE)
+  File "/workspace/src/data_processing.py", line 40, in load_glove_embeddings
+    parts = line.strip().split()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/workspace/src/train.py", line 154, in <module>
+    main()
+  File "/workspace/src/train.py", line 82, in main
+    data = prepare_features(config)
+  File "/workspace/src/data_processing.py", line 188, in prepare_features
+    word_to_idx, embeddings = load_glove_embeddings(cfg.GLOVE_FILE)
+  File "/workspace/src/data_processing.py", line 40, in load_glove_embeddings
+    parts = line.strip().split()
+KeyboardInterrupt

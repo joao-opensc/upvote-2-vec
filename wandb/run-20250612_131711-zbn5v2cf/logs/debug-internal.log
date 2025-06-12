@@ -1,0 +1,15 @@
+{"time":"2025-06-12T13:17:11.825746799Z","level":"INFO","msg":"stream: starting","core version":"0.20.1","symlink path":"/workspace/wandb/run-20250612_131711-zbn5v2cf/logs/debug-core.log"}
+{"time":"2025-06-12T13:17:12.081978299Z","level":"INFO","msg":"stream: created new stream","id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.082279091Z","level":"INFO","msg":"stream: started","id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.082346758Z","level":"INFO","msg":"sender: started","stream_id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.082308841Z","level":"INFO","msg":"writer: Do: started","stream_id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.082404091Z","level":"INFO","msg":"handler: started","stream_id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.826075466Z","level":"INFO","msg":"stream: closing","id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.828331675Z","level":"ERROR","msg":"sender: uploadConfigFile: stream: no run"}
+{"time":"2025-06-12T13:17:12.991239633Z","level":"ERROR","msg":"HTTP error","status":404,"method":"POST","url":"https://api.wandb.ai/graphql"}
+{"time":"2025-06-12T13:17:12.991855008Z","level":"ERROR","msg":"runfiles: CreateRunFiles returned error: returned error 404: {\"data\":{\"createRunFiles\":null},\"errors\":[{\"message\":\"project /hackernews-score-prediction not found during createRunFiles\",\"path\":[\"createRunFiles\"]}]}"}
+{"time":"2025-06-12T13:17:12.997443716Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-06-12T13:17:12.997777591Z","level":"INFO","msg":"handler: closed","stream_id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.99783055Z","level":"INFO","msg":"sender: closed","stream_id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.998498758Z","level":"INFO","msg":"writer: Close: closed","stream_id":"zbn5v2cf"}
+{"time":"2025-06-12T13:17:12.999307091Z","level":"INFO","msg":"stream: closed","id":"zbn5v2cf"}
