@@ -1,6 +1,6 @@
 # HackerNews Score Prediction
 
-This project contains a machine learning model to predict the potential score of a HackerNews submission. The model is built with PyTorch and served via a FastAPI application.
+This project contains a machine learning model to predict the potential score of a HackerNews submission. The model is built with PyTorch and served via a FastAPI application. A Streamlit application is also included to interact with the model.
 
 This repository is a refactored version of an experimental Jupyter Notebook, organized for maintainability and deployment.
 
@@ -9,7 +9,7 @@ This repository is a refactored version of an experimental Jupyter Notebook, org
 ```
 .
 ├── artifacts/                # Stores trained model, encoders, scalers
-├── app/                      # FastAPI application
+├── backend/                  # FastAPI application
 │   └── main.py
 ├── data/                     # Raw data (not checked into git)
 ├── notebooks/                # Experimental notebooks
@@ -19,6 +19,7 @@ This repository is a refactored version of an experimental Jupyter Notebook, org
 │   ├── model.py
 │   ├── train.py
 │   └── predict.py
+├── streamlit_app.py          # Streamlit frontend application
 ├── Dockerfile                # To containerize the application
 ├── requirements.txt          # Project dependencies
 └── README.md                 # This file
@@ -56,7 +57,7 @@ python -m src.train
 
 This process is tracked using Weights & Biases. Make sure you are logged in (`wandb login`) if you want to sync the results.
 
-## Running the API
+## Running the Backend API
 
 Once the model is trained and the artifacts are in the `artifacts/` directory, you can serve the model via the FastAPI application.
 
@@ -65,7 +66,7 @@ Once the model is trained and the artifacts are in the `artifacts/` directory, y
 For development, you can run the app directly with Uvicorn, which supports live reloading.
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn backend.main:app --reload
 ```
 
 The API will be available at `http://127.0.0.1:8000`. You can access the interactive documentation at `http://127.0.0.1:8000/docs`.
@@ -85,6 +86,16 @@ docker run -p 8000:8000 hn-score-predictor
 ```
 
 The API will be accessible at `http://localhost:8000`.
+
+## Running the Frontend
+
+With the backend API running, you can start the Streamlit frontend.
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The application will be available at a local URL, typically `http://localhost:8501`.
 
 ## Using the API
 

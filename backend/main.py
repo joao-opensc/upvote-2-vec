@@ -60,4 +60,4 @@ def post_predict(story: Story):
     return {"predicted_score": score}
 
 # To run this app:
-# uvicorn app.main:app --reload 
+# uvicorn backend.main:app --reload 
