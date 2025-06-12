@@ -1,11 +1,12 @@
 {
     "name": "Jupyter Notebook Environment",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": ".."
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "containerEnv": {
+        "JUPYTER_PATH": "/workspace"
     },
     "workspaceFolder": "/workspace",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workspace,consistency=cached",
     "customizations": {
         "vscode": {
             "extensions": [
