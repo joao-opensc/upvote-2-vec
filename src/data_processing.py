@@ -6,6 +6,7 @@ import re
 import zipfile
 from io import BytesIO
 from urllib.parse import urlparse
+import glob
 
 import numpy as np
 import pandas as pd
@@ -186,17 +187,49 @@ def prepare_features(cfg):
 
     # Load GloVe and create title embeddings
     word_to_idx, embeddings = load_glove_embeddings(cfg.GLOVE_FILE)
-    X_title_embeddings = np.array([title_to_embedding(title, word_to_idx, embeddings) for title in df_augmented['title']])
+    
+    # Process title embeddings in batches and save to disk
+    print("Creating title embeddings in batches...")
+    batch_size = 10000
+    temp_dir = "temp_embeddings"
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    # Process and save embeddings in batches
+    for i in range(0, len(df_augmented), batch_size):
+        batch_titles = df_augmented['title'].iloc[i:i+batch_size]
+        batch_embeddings = [title_to_embedding(title, word_to_idx, embeddings) for title in batch_titles]
+        batch_array = np.array(batch_embeddings)
+        # Save batch to disk
+        np.save(f"{temp_dir}/batch_{i//batch_size}.npy", batch_array)
+        # Clear memory
+        del batch_embeddings
+        del batch_array
+        if i % 100000 == 0:
+            print(f"Processed and saved {i:,} titles...")
+    
+    # Load all batches and combine
+    print("Loading and combining embeddings...")
+    batch_files = sorted(glob.glob(f"{temp_dir}/batch_*.npy"))
+    X_title_embeddings = np.concatenate([np.load(f) for f in batch_files])
+    
+    # Clean up temporary files
+    print("Cleaning up temporary files...")
+    for f in batch_files:
+        os.remove(f)
+    os.rmdir(temp_dir)
     
     # Update word counts after augmentation
     df_augmented['word_count'] = [len(title.strip().split()) for title in df_augmented['title']]
 
     # Prepare other features
-    numerical_features = df_augmented[['word_count', 'time_of_day_sin', 'time_of_day_cos', 'day_of_week_sin', 'day_of_week_cos']].values
+    print("Preparing numerical features...")
+    numerical_features = df_augmented[['word_count', 'time_of_day_sin', 'time_of_day_cos', 
+                                     'day_of_week_sin', 'day_of_week_cos']].values
     scaler = StandardScaler()
     X_numerical_scaled = scaler.fit_transform(numerical_features)
 
-    # Prepare embeddings
+    # Prepare domain and user encodings
+    print("Preparing domain and user encodings...")
     domain_counts = df_augmented['domain'].value_counts()
     top_domains = domain_counts.head(cfg.NUM_DOMAINS).index
     df_augmented['domain_mapped'] = df_augmented['domain'].apply(lambda x: x if x in top_domains else 'OTHER')
@@ -210,6 +243,11 @@ def prepare_features(cfg):
     X_user_ids = user_encoder.transform(df_augmented['user_mapped'])
     
     y = df_augmented['score_log'].values
+    
+    # Clear memory
+    del df_filtered
+    del df_augmented
+    del numerical_features
     
     print("--- Data Preparation Finished ---")
 

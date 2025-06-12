@@ -4,11 +4,11 @@ Configuration file for the HackerNews Score Prediction project.
 
 # Data Constants
 NUMBER_OF_SAMPLES = 4000000
-MINIMUM_SCORE = 100
+MINIMUM_SCORE = 3
 MAXIMUM_SCORE = 1000
 MIN_TRESHOLD = 10000
-MAX_AUGMENT_PER_BIN = 10000
-TOTAL_BUDGET = 80000
+MAX_AUGMENT_PER_BIN = 15000
+TOTAL_BUDGET = 100000
 NUM_DOMAINS = 200
 NUM_USERS = 1000
 
@@ -22,7 +22,7 @@ DROPOUT_RATE = 0.3         # Dropout rate
 
 # Training Constants
 BATCH_SIZE = 512           # Batch size for training
-LEARNING_RATE = 0.002      # Learning rate
+LEARNING_RATE = 0.01       # Learning rate
 WEIGHT_DECAY = 1e-4        # Weight decay for AdamW
 NUM_EPOCHS = 10            # Maximum training epochs
 PATIENCE = 100             # Early stopping patience
