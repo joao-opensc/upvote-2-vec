@@ -16,11 +16,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
-import src.config as cfg
+import config as cfg
 
 # --- GloVe Embedding Loading ---
 
-def load_glove_embeddings(glove_file=config.GLOVE_FILE):
+def load_glove_embeddings(glove_file=cfg.GLOVE_FILE):
     """Loads GloVe embeddings from file, downloading if necessary."""
     if not os.path.exists(glove_file):
         print("Downloading GloVe 200d embeddings...")

@@ -36,11 +36,10 @@ def main():
 
     sweep_config = {
         'method': 'bayes',
-        'program': 'src.train',
+        'program': 'src/train.py',
         'command': [
             '${env}',
             '${interpreter}',
-            '-m',
             '${program}',
             '${args}'
         ],
@@ -93,6 +92,11 @@ def main():
     print(f"\n🔥 Launching {args.agents} parallel agents...")
     processes = []
     
+    # Add the project root to the python path to allow relative imports
+    env = os.environ.copy()
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    env['PYTHONPATH'] = project_root + os.pathsep + env.get('PYTHONPATH', '')
+    
     # We need to set the executable for the subprocesses to be the same python
     # that is running this script. This is to avoid issues in environments
     # where multiple python versions might be installed.
@@ -108,7 +112,7 @@ def main():
     for _ in range(args.agents):
         # Using subprocess.Popen to run agents in the background
         # This is often more robust for long-running, independent tasks like agents.
-        p = subprocess.Popen(command)
+        p = subprocess.Popen(command, env=env)
         processes.append(p)
         print(f"  -> Launched agent with PID: {p.pid}")
 

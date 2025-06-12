@@ -7,10 +7,10 @@ from datetime import datetime
 import numpy as np
 import torch
 
-import src.config as cfg
-from src.data_processing import (clean_text, extract_domains,
+import config as cfg
+from data_processing import (clean_text, extract_domains,
                                  load_glove_embeddings, title_to_embedding)
-from src.model import CombinedScorePredictor
+from model import CombinedScorePredictor
 
 class Scorer:
     def __init__(self, artifacts_dir=cfg.ARTIFACTS_DIR):
