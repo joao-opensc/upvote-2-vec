@@ -1,0 +1,82 @@
+_wandb:
+    value:
+        cli_version: 0.20.1
+        m: []
+        python_version: 3.10.17
+        t:
+            "1":
+                - 1
+                - 5
+                - 53
+            "2":
+                - 1
+                - 5
+                - 53
+            "3":
+                - 1
+                - 2
+                - 13
+                - 16
+                - 55
+            "4": 3.10.17
+            "5": 0.20.1
+            "12": 0.20.1
+            "13": linux-aarch64
+ARTIFACTS_DIR:
+    value: artifacts
+BATCH_SIZE:
+    value: 512
+DATA_PATH:
+    value: data/hackernews_full_data.parquet
+DOMAIN_EMB_DIM:
+    value: 32
+DOMAIN_ENCODER_PATH:
+    value: artifacts/domain_encoder.pkl
+DROPOUT_RATE:
+    value: 0.3
+FACTOR:
+    value: 0.5
+GLOVE_FILE:
+    value: data/glove.6B.200d.txt
+HIDDEN_DIM:
+    value: 256
+LEARNING_RATE:
+    value: 0.002
+MAX_AUGMENT_PER_BIN:
+    value: 10000
+MAXIMUM_SCORE:
+    value: 1000
+MIN_TRESHOLD:
+    value: 10000
+MINIMUM_SCORE:
+    value: 100
+MODEL_PATH:
+    value: artifacts/best_combined_model.pth
+NUM_DOMAINS:
+    value: 200
+NUM_EPOCHS:
+    value: 10
+NUM_USERS:
+    value: 1000
+NUMBER_OF_SAMPLES:
+    value: 4000000
+NUMERICAL_DIM:
+    value: 5
+PATIENCE:
+    value: 100
+SCALER_PATH:
+    value: artifacts/scaler.pkl
+TEST_SIZE:
+    value: 0.2
+TITLE_EMB_DIM:
+    value: 200
+TOTAL_BUDGET:
+    value: 80000
+USER_EMB_DIM:
+    value: 64
+USER_ENCODER_PATH:
+    value: artifacts/user_encoder.pkl
+VAL_SIZE:
+    value: 0.25
+WEIGHT_DECAY:
+    value: 0.0001

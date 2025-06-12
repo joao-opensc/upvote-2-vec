@@ -4,7 +4,7 @@ Configuration file for the HackerNews Score Prediction project.
 
 # Data Constants
 NUMBER_OF_SAMPLES = 4000000
-MINIMUM_SCORE = 10
+MINIMUM_SCORE = 100
 MAXIMUM_SCORE = 1000
 MIN_TRESHOLD = 10000
 MAX_AUGMENT_PER_BIN = 10000
