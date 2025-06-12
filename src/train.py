@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.optim as optim
 import wandb
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 import src.config as cfg
 from src.data_processing import create_data_loader, prepare_features
@@ -69,7 +70,7 @@ def train():
     # --- W&B Initialization ---
     default_config = {k: v for k, v in vars(cfg).items() if not k.startswith('_')}
     wandb.init(
-        project="hackernews-score-prediction",
+        project="hackernews-score-sweeps-final",
         config=default_config
     )
     config = wandb.config
@@ -89,6 +90,22 @@ def train():
     train_val_idx, test_idx = train_test_split(indices, test_size=config.VAL_SIZE, random_state=42)
     train_idx, val_idx = train_test_split(train_val_idx, test_size=config.TEST_SIZE, random_state=42)
     
+    # --- Feature Scaling (No Data Leakage) ---
+    scaler = StandardScaler()
+    
+    # Fit on training data ONLY and transform it
+    X_numerical_train_scaled = scaler.fit_transform(data['X_numerical'][train_idx])
+
+    # Create a new array to hold all scaled data, ensuring alignment with original indices
+    X_numerical_scaled = np.zeros_like(data['X_numerical'], dtype=np.float32)
+    X_numerical_scaled[train_idx] = X_numerical_train_scaled
+    X_numerical_scaled[val_idx] = scaler.transform(data['X_numerical'][val_idx])
+    X_numerical_scaled[test_idx] = scaler.transform(data['X_numerical'][test_idx])
+    
+    # Replace unscaled data with the properly scaled version for the data loaders
+    data['X_numerical_scaled'] = X_numerical_scaled
+    del data['X_numerical']
+
     train_loader = create_data_loader(data, train_idx, config.BATCH_SIZE)
     val_loader = create_data_loader(data, val_idx, config.BATCH_SIZE, shuffle=False)
     test_loader = create_data_loader(data, test_idx, config.BATCH_SIZE, shuffle=False)
@@ -164,7 +181,7 @@ def train():
     with open(cfg.USER_ENCODER_PATH, 'wb') as f:
         pickle.dump(data["user_encoder"], f)
     with open(cfg.SCALER_PATH, 'wb') as f:
-        pickle.dump(data["scaler"], f)
+        pickle.dump(scaler, f)
     print(f"✅ Artifacts saved to '{cfg.ARTIFACTS_DIR}'")
     
     wandb.finish()

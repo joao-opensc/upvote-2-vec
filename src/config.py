@@ -3,7 +3,7 @@ Configuration file for the HackerNews Score Prediction project.
 """
 
 # Data Constants
-NUMBER_OF_SAMPLES = 4900000
+NUMBER_OF_SAMPLES = 2000000
 MINIMUM_SCORE = 5
 MAXIMUM_SCORE = 1000
 MIN_TRESHOLD = 10000

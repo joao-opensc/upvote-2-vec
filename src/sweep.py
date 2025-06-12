@@ -30,7 +30,7 @@ def main():
         "--agents", type=int, default=10, help="Number of parallel agents to run."
     )
     parser.add_argument(
-        "--project_name", type=str, default="hackernews-score-prediction", help="W&B project name."
+        "--project_name", type=str, default="hackernews-score-sweeps-final", help="W&B project name."
     )
     args = parser.parse_args()
 

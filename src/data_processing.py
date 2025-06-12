@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
-import src.config as config
+import src.config as cfg
 
 # --- GloVe Embedding Loading ---
 
@@ -228,8 +228,9 @@ def prepare_features(cfg):
     print("Preparing numerical features...")
     numerical_features = df_augmented[['word_count', 'time_of_day_sin', 'time_of_day_cos', 
                                      'day_of_week_sin', 'day_of_week_cos']].values
-    scaler = StandardScaler()
-    X_numerical_scaled = scaler.fit_transform(numerical_features)
+    # SCALER IS NOW APPLIED IN THE TRAINING SCRIPT AFTER SPLITTING
+    # scaler = StandardScaler()
+    # X_numerical_scaled = scaler.fit_transform(numerical_features)
 
     # Prepare domain and user encodings
     print("Preparing domain and user encodings...")
@@ -250,19 +251,18 @@ def prepare_features(cfg):
     # Clear memory
     del df_filtered
     del df_augmented
-    del numerical_features
     
     print("--- Data Preparation Finished ---")
 
     return {
         "X_title_embeddings": X_title_embeddings,
-        "X_numerical_scaled": X_numerical_scaled,
+        "X_numerical": numerical_features,
         "X_domain_ids": X_domain_ids,
         "X_user_ids": X_user_ids,
         "y": y,
         "domain_encoder": domain_encoder,
         "user_encoder": user_encoder,
-        "scaler": scaler,
+        # "scaler": scaler,
         "n_domains": len(domain_encoder.classes_),
         "n_users": len(user_encoder.classes_),
     }
